@@ -1,0 +1,288 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>SlowLearner — Educator Dashboard</title>
+  <style>
+    :root{
+      --bg:#f4f7fb; --card:#fff; --primary:#2563eb; --muted:#6b7280; --accent:#10b981;
+      --glass: rgba(255,255,255,0.6);
+    }
+    *{box-sizing:border-box}
+    body{font-family:Inter,ui-sans-serif,system-ui,Segoe UI,Roboto,"Helvetica Neue",Arial; margin:0; background:linear-gradient(180deg,var(--bg),#eef3fb); color:#111}
+    .app{display:flex;min-height:100vh}
+    aside{width:270px;background:linear-gradient(180deg,#ffffff,#f8fafc);border-right:1px solid #e6eef9;padding:22px}
+    header.logo{font-weight:700;color:var(--primary);font-size:18px;display:flex;align-items:center;gap:10px}
+    header.logo .dot{width:10px;height:10px;background:var(--accent);border-radius:3px}
+    nav{margin-top:22px}
+    nav button{display:block;width:100%;padding:10px 12px;border-radius:8px;border:0;background:transparent;text-align:left;color:#0f172a;margin-bottom:8px;cursor:pointer}
+    nav button.active{background:rgba(37,99,235,0.08);color:var(--primary);font-weight:600}
+    main{flex:1;padding:28px}
+    .top{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px}
+    .search{display:flex;gap:10px;align-items:center}
+    .card{background:var(--card);padding:18px;border-radius:12px;box-shadow:0 6px 18px rgba(20,40,80,0.04);}
+    .grid{display:grid;gap:16px}
+    .grid.cols-3{grid-template-columns:repeat(3,1fr)}
+    h2{margin:0 0 10px 0}
+
+    /* Student list */
+    .students-list{margin-top:16px}
+    .student-row{display:flex;justify-content:space-between;align-items:center;padding:10px;border-radius:8px;border:1px solid #eef3fb;margin-bottom:8px}
+    .student-meta{display:flex;gap:12px;align-items:center}
+    .avatar{width:44px;height:44px;border-radius:8px;background:linear-gradient(135deg,#eef2ff,#fff);display:flex;align-items:center;justify-content:center;font-weight:700;color:var(--primary)}
+    .progress{width:220px;height:12px;background:#eef3fb;border-radius:8px;overflow:hidden}
+    .progress > i{display:block;height:100%;border-radius:8px;background:linear-gradient(90deg,var(--primary),#60a5fa);}
+
+    /* Upload area */
+    form .row{display:flex;gap:10px;margin-bottom:10px}
+    input[type=text],textarea,select{width:100%;padding:10px;border-radius:8px;border:1px solid #e6eef9}
+    input[type=file]{padding:6px}
+    button.primary{background:var(--primary);color:white;padding:10px 14px;border-radius:8px;border:0;cursor:pointer}
+    button.ghost{background:transparent;border:1px solid #e6eef9;padding:8px;border-radius:8px;cursor:pointer}
+
+    /* Materials list */
+    .materials{margin-top:12px}
+    .material-item{display:flex;justify-content:space-between;align-items:center;padding:10px;border-radius:8px;border:1px solid #f1f5f9;margin-bottom:8px}
+
+    /* Study plan */
+    .plan{white-space:pre-wrap}
+
+    /* responsive */
+    @media (max-width:900px){aside{display:none} .app{flex-direction:column} main{padding:18px}}
+  </style>
+</head>
+<body>
+  <div class="app">
+    <aside>
+      <div class="logo"><span class="dot"></span> SlowLearner - Educator</div>
+      <nav>
+        <button id="tab-dashboard" class="active">Dashboard</button>
+        <button id="tab-upload">Upload Material</button>
+        <button id="tab-plan">Study Plans</button>
+        <button id="tab-students">Students</button>
+        <button id="btn-export">Export Data</button>
+      </nav>
+      <div style="margin-top:18px;font-size:13px;color:var(--muted)">Local demo stores data in your browser's localStorage. Use export/import to move data.</div>
+    </aside>
+
+    <main>
+      <div class="top">
+        <div>
+          <h1 style="margin:0">Educator Dashboard</h1>
+          <div style="color:var(--muted);font-size:13px">Track progress, upload materials & create personalized study plans</div>
+        </div>
+        <div class="search">
+          <input id="global-search" placeholder="Search students or materials..." style="padding:8px;border-radius:8px;border:1px solid #e6eef9" />
+          <button id="btn-add-demo" class="ghost">+ Add demo student</button>
+        </div>
+      </div>
+
+      <!-- DASHBOARD -->
+      <section id="panel-dashboard">
+        <div class="grid cols-3">
+          <div class="card">
+            <h2>Overview</h2>
+            <div style="display:flex;gap:10px;margin-top:8px">
+              <div>
+                <div style="font-size:22px;font-weight:700" id="stat-students">0</div>
+                <div style="color:var(--muted);font-size:13px">Students</div>
+              </div>
+              <div>
+                <div style="font-size:22px;font-weight:700" id="stat-materials">0</div>
+                <div style="color:var(--muted);font-size:13px">Materials</div>
+              </div>
+              <div>
+                <div style="font-size:22px;font-weight:700" id="stat-plans">0</div>
+                <div style="color:var(--muted);font-size:13px">Study Plans</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card" id="card-top-students">
+            <h2>Top students</h2>
+            <div id="top-students-list"></div>
+          </div>
+
+          <div class="card">
+            <h2>Recent materials</h2>
+            <div id="recent-materials"></div>
+          </div>
+        </div>
+
+        <div class="card" style="margin-top:16px">
+          <h2>All students</h2>
+          <div class="students-list" id="students-list"></div>
+        </div>
+      </section>
+
+      <!-- UPLOAD -->
+      <section id="panel-upload" style="display:none">
+        <div class="card">
+          <h2>Upload study material</h2>
+          <form id="upload-form">
+            <div class="row">
+              <input id="mat-title" type="text" placeholder="Title (e.g., Chapter 1 - Fractions)" required />
+              <select id="mat-class"><option value="General">General</option><option>Class 6</option><option>Class 7</option><option>Class 8</option></select>
+            </div>
+            <div class="row">
+              <textarea id="mat-desc" rows="3" placeholder="Short description / learning objectives"></textarea>
+            </div>
+            <div class="row">
+              <input id="mat-file" type="file" accept="application/pdf,image/*,text/*" />
+            </div>
+            <div style="display:flex;gap:10px;align-items:center">
+              <button type="submit" class="primary">Upload</button>
+              <button id="btn-clear-upload" type="button" class="ghost">Clear</button>
+            </div>
+          </form>
+
+          <div class="materials" id="materials-list"></div>
+        </div>
+      </section>
+
+      <!-- STUDY PLANS -->
+      <section id="panel-plan" style="display:none">
+        <div class="card">
+          <h2>Create / Assign study plan</h2>
+          <form id="plan-form">
+            <div class="row">
+              <select id="plan-student"></select>
+              <input id="plan-title" type="text" placeholder="Plan title (e.g., Revision Week 1)" required />
+            </div>
+            <div class="row">
+              <textarea id="plan-desc" rows="4" placeholder="Describe the study plan — topics, schedule, goals"></textarea>
+            </div>
+            <div style="display:flex;gap:10px">
+              <button class="primary" type="submit">Save Plan</button>
+              <button id="btn-clear-plan" type="button" class="ghost">Clear</button>
+            </div>
+          </form>
+
+          <div style="margin-top:14px">
+            <h3>Assigned plans</h3>
+            <div id="plans-list"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- STUDENTS -->
+      <section id="panel-students" style="display:none">
+        <div class="card">
+          <h2>Manage students</h2>
+          <form id="student-form" style="margin-bottom:12px">
+            <div class="row">
+              <input id="stu-name" type="text" placeholder="Student name" required />
+              <input id="stu-roll" type="text" placeholder="Roll / ID" />
+            </div>
+            <div class="row">
+              <input id="stu-email" type="text" placeholder="Email (optional)" />
+              <select id="stu-class"><option>Class 6</option><option>Class 7</option><option>Class 8</option></select>
+            </div>
+            <div style="display:flex;gap:10px">
+              <button class="primary" type="submit">Add student</button>
+              <button id="btn-reset-students" type="button" class="ghost">Reset all students</button>
+            </div>
+          </form>
+
+          <div id="students-admin-list"></div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <script>
+    // Check if user is logged in
+    const loggedInUser = JSON.parse(localStorage.getItem('loggedInUser'));
+    if (!loggedInUser || loggedInUser.role !== 'educator') {
+        window.location.href = 'index.html';
+    }
+
+    // Get shared data
+    const STORAGE_KEY = 'slowlearner_demo_v1';
+    let db = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
+    if(!db.students) {
+        // Initialize with data from main app if available
+        const mainAppData = JSON.parse(localStorage.getItem('db')) || {};
+        db = {
+            students: mainAppData.users?.filter(u => u.role === 'student') || [],
+            materials: [],
+            plans: []
+        };
+    }
+
+    // Modified save function to sync with main app
+    function save() {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(db));
+        
+        // Sync student data back to main app
+        const mainAppData = JSON.parse(localStorage.getItem('db')) || {};
+        mainAppData.users = mainAppData.users || [];
+        
+        // Update existing student data
+        db.students.forEach(student => {
+            const index = mainAppData.users.findIndex(u => u.email === student.email);
+            if (index !== -1) {
+                mainAppData.users[index] = {
+                    ...mainAppData.users[index],
+                    progress: student.progress,
+                    notes: student.notes
+                };
+            }
+        });
+        
+        localStorage.setItem('db', JSON.stringify(mainAppData));
+        renderAll();
+    }
+
+    // Add logout functionality
+    function logout() {
+        localStorage.removeItem('loggedInUser');
+        window.location.href = 'index.html';
+    }
+
+    // Add logout button to header
+    const headerDiv = document.querySelector('.top');
+    const logoutBtn = document.createElement('button');
+    logoutBtn.className = 'ghost';
+    logoutBtn.textContent = 'Logout';
+    logoutBtn.onclick = logout;
+    headerDiv.querySelector('.search').appendChild(logoutBtn);
+
+    // Modify student data handling
+    window.openStudent = function(id) {
+        const s = db.students.find(x => x.id === id);
+        if(!s) return;
+        
+        // Get additional data from main app
+        const mainAppData = JSON.parse(localStorage.getItem('db')) || {};
+        const studentData = mainAppData.studentData?.[s.email] || {};
+        
+        const w = window.open();
+        w.document.title = s.name;
+        w.document.body.style.fontFamily = 'sans-serif';
+        w.document.body.innerHTML = `
+            <div style="padding:20px">
+                <h2>${s.name}</h2>
+                <div style='color:#4b5563'>${s.class} • ${s.roll||''} • ${s.email||''}</div>
+                <h3>Progress: ${s.progress}%</h3>
+                <div style='width:100%;background:#eef3fb;height:16px;border-radius:8px;overflow:hidden'>
+                    <div style='height:100%;width:${s.progress}%;background:linear-gradient(90deg,var(--primary),#60a5fa)'></div>
+                </div>
+                <h3 style='margin-top:14px'>Quiz Scores</h3>
+                <div style='margin-top:10px'>
+                    ${Object.entries(studentData.quizScores || {}).map(([subject, score]) => `
+                        <div style='margin:5px 0'>
+                            <strong>${subject}:</strong> ${score}%
+                        </div>
+                    `).join('')}
+                </div>
+                <h3 style='margin-top:14px'>Notes</h3>
+                <pre style='white-space:pre-wrap'>${s.notes||"No notes"}</pre>
+            </div>
+        `;
+    }
+</script>
+</body>
+</html>

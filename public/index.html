@@ -1,0 +1,1203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Supporting Slow Learners: An Interactive Report</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            scroll-behavior: smooth;
+        }
+        .tab-active {
+            border-color: #4f46e5;
+            color: #4f46e5;
+            background-color: #eef2ff;
+        }
+        .workflow-step.active {
+            transform: scale(1.05);
+            box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.5);
+            border-color: #4f46e5;
+        }
+        .filter-btn.active {
+            background-color: #4f46e5;
+            color: white;
+        }
+        .modal-overlay {
+            visibility: hidden;
+            opacity: 0;
+            transition: visibility 0s, opacity 0.3s ease-in-out;
+        }
+        .modal-overlay.open {
+            visibility: visible;
+            opacity: 1;
+        }
+        .modal-content {
+            transform: translateY(-20px);
+            transition: transform 0.3s ease-in-out;
+        }
+        .modal-overlay.open .modal-content {
+            transform: translateY(0);
+        }
+    </style>
+    <script src="https://apis.google.com/js/api.js"></script>
+</head>
+<body class="bg-slate-50 text-slate-800">
+
+    <!-- Hero, Challenge, Solution, Workflow, Research, Timeline, and Modals -->
+    <header class="bg-white/80 backdrop-blur-lg sticky top-0 z-50 shadow-sm">
+        <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center py-4">
+                <div class="flex items-center space-x-2">
+                    <span class="w-8 h-8 bg-indigo-600 rounded-full flex items-center justify-center text-white font-bold text-lg">R</span>
+                    <span class="font-bold text-xl text-slate-900">Remedial Innovation</span>
+                </div>
+                <div class="hidden md:flex items-center space-x-8 text-sm font-semibold">
+                    <a href="#challenge" class="text-slate-600 hover:text-indigo-600 transition">The Challenge</a>
+                    <a href="#solution" class="text-slate-600 hover:text-indigo-600 transition">Our Solution</a>
+                    <a href="#workflow" class="text-slate-600 hover:text-indigo-600 transition">Workflow</a>
+                    <a href="#research" class="text-slate-600 hover:text-indigo-600 transition">Research</a>
+                </div>
+                <div id="auth-buttons" class="flex space-x-4">
+                    <button id="register-btn" class="inline-block py-2 px-4 bg-slate-800 text-white font-semibold rounded-full shadow-lg hover:bg-slate-900 transition duration-300 transform hover:scale-105">
+                        Register
+                    </button>
+                    <button id="login-btn" class="inline-block py-2 px-4 bg-white text-slate-800 font-semibold rounded-full shadow-lg border-2 border-slate-200 hover:bg-slate-100 transition duration-300 transform hover:scale-105">
+                        Log In
+                    </button>
+                </div>
+                <div id="logout-button" class="hidden">
+                    <button id="logout-btn" class="inline-block py-2 px-4 bg-red-600 text-white font-semibold rounded-full shadow-lg hover:bg-red-700 transition duration-300 transform hover:scale-105">
+                        Log Out
+                    </button>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main id="main-content" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-20">
+        <div id="initial-view">
+            <section class="text-center">
+                <h1 class="text-4xl md:text-6xl font-extrabold text-slate-900 leading-tight">
+                    Supporting <span class="text-indigo-600">Slow Learners</span> With Remedial Innovation
+                </h1>
+                <p class="mt-6 max-w-3xl mx-auto text-lg text-slate-600">
+                    This project tackles the unique challenges faced by slow learners. We believe traditional teaching methods are not enough. This interactive report explores our initiative to implement innovative, personalized, and effective remedial strategies to ensure every student has the opportunity to succeed.
+                </p>
+            </section>
+            <section id="challenge" class="mt-20 md:mt-32">
+                <div class="text-center">
+                    <h2 class="text-3xl md:text-4xl font-bold text-slate-900">The Challenge with Existing Systems</h2>
+                    <p class="mt-4 max-w-2xl mx-auto text-slate-600">
+                        Current educational frameworks often overlook the diverse needs of students. Below are the key weaknesses we've identified that hinder the progress of slow learners. Click on each card to learn more.
+                    </p>
+                </div>
+                <div id="challenges-grid" class="mt-12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"></div>
+            </section>
+            <section id="solution" class="mt-20 md:mt-32">
+                <div class="text-center">
+                    <h2 class="text-3xl md:text-4xl font-bold text-slate-900">Our Innovative Solution</h2>
+                    <p class="mt-4 max-w-2xl mx-auto text-slate-600">
+                        Our project introduces a multi-faceted system designed to provide comprehensive support. We focus on personalization, advanced teaching methods, and robust support systems for both students and educators. Explore the core features of our proposed system below.
+                    </p>
+                </div>
+                <div class="mt-12">
+                    <div class="flex flex-wrap justify-center gap-2 md:gap-4 mb-8" id="solution-tabs"></div>
+                    <div id="solution-content" class="bg-white p-8 rounded-2xl shadow-lg transition-all duration-500 min-h-[300px]"></div>
+                </div>
+            </section>
+            <section id="workflow" class="mt-20 md:mt-32">
+                <div class="text-center">
+                    <h2 class="text-3xl md:text-4xl font-bold text-slate-900">The Workflow in Action</h2>
+                    <p class="mt-4 max-w-2xl mx-auto text-slate-600">
+                        This interactive diagram illustrates the step-by-step process of our remedial program, from initial assessment to measuring success and making adjustments. Click on any step to see a detailed explanation of what it involves.
+                    </p>
+                </div>
+                <div class="mt-12 lg:flex lg:gap-8 lg:items-start">
+                    <div class="lg:w-2/3">
+                        <div id="workflow-diagram" class="space-y-4"></div>
+                    </div>
+                    <div class="lg:w-1/3 mt-8 lg:mt-0 sticky top-24">
+                        <div id="workflow-details" class="bg-white p-6 rounded-2xl shadow-lg min-h-[200px]">
+                            <h3 class="font-bold text-lg text-slate-900">Details</h3>
+                            <p class="mt-2 text-slate-600">Click a step on the left to see more details here.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            <section id="research" class="mt-20 md:mt-32">
+                <div class="text-center">
+                    <h2 class="text-3xl md:text-4xl font-bold text-slate-900">Insights from Research</h2>
+                    <p class="mt-4 max-w-2xl mx-auto text-slate-600">
+                        Our approach is grounded in extensive academic research. This section summarizes key papers from our literature review. Use the filters to explore studies based on their primary focus.
+                    </p>
+                </div>
+                <div id="research-filters" class="mt-12 flex flex-wrap justify-center gap-3"></div>
+                <div id="research-grid" class="mt-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"></div>
+            </section>
+            <section id="timeline" class="mt-20 md:mt-32">
+                <div class="text-center">
+                    <h2 class="text-3xl md:text-4xl font-bold text-slate-900">Project Timeline</h2>
+                    <p class="mt-4 max-w-2xl mx-auto text-slate-600">
+                        This timeline outlines the key phases and milestones of our project, from initial discussions to final report submission.
+                    </p>
+                </div>
+                <div id="timeline-container" class="mt-12 w-full max-w-4xl mx-auto"></div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Registration Modal -->
+    <div id="registration-modal" class="modal-overlay fixed inset-0 z-[100] bg-slate-900 bg-opacity-70 flex items-center justify-center p-4">
+        <div class="modal-content bg-white p-8 rounded-3xl shadow-2xl w-full max-w-md mx-auto relative">
+            <button id="close-reg-modal" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 transition">
+                <span class="text-2xl font-bold">×</span>
+            </button>
+            <h2 class="text-3xl font-bold text-slate-900 text-center mb-6">Register</h2>
+            <form id="registration-form" class="space-y-4">
+                <div>
+                    <label for="reg-name" class="block text-slate-700 font-semibold mb-2">Full Name</label>
+                    <input type="text" id="reg-name" required class="w-full px-4 py-3 rounded-lg border-2 border-slate-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-colors">
+                </div>
+                <div>
+                    <label for="reg-email" class="block text-slate-700 font-semibold mb-2">Email</label>
+                    <input type="email" id="reg-email" required class="w-full px-4 py-3 rounded-lg border-2 border-slate-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-colors">
+                </div>
+                <div>
+                    <label for="reg-password" class="block text-slate-700 font-semibold mb-2">Password</label>
+                    <input type="password" id="reg-password" required class="w-full px-4 py-3 rounded-lg border-2 border-slate-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-colors">
+                </div>
+                <div>
+                    <label class="block text-slate-700 font-semibold mb-2">User Type</label>
+                    <div class="flex items-center space-x-4">
+                        <div class="flex items-center">
+                            <input type="radio" id="reg-student" name="user-type" value="student" required class="w-4 h-4 text-indigo-600 border-gray-300 focus:ring-indigo-500">
+                            <label for="reg-student" class="ml-2 text-slate-700">Student</label>
+                        </div>
+                        <div class="flex items-center">
+                            <input type="radio" id="reg-educator" name="user-type" value="educator" required class="w-4 h-4 text-indigo-600 border-gray-300 focus:ring-indigo-500">
+                            <label for="reg-educator" class="ml-2 text-slate-700">Educator</label>
+                        </div>
+                    </div>
+                </div>
+                <button type="submit" class="w-full py-3 px-6 bg-indigo-600 text-white font-bold rounded-full shadow-lg hover:bg-indigo-700 transition duration-300">
+                    Submit
+                </button>
+            </form>
+            <div id="registration-message" class="mt-4 text-center text-sm font-semibold text-slate-600 hidden"></div>
+        </div>
+    </div>
+
+    <!-- Login Modal -->
+    <div id="login-modal" class="modal-overlay fixed inset-0 z-[100] bg-slate-900 bg-opacity-70 flex items-center justify-center p-4">
+        <div class="modal-content bg-white p-8 rounded-3xl shadow-2xl w-full max-w-md mx-auto relative">
+            <button id="close-login-modal" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 transition">
+                <span class="text-2xl font-bold">×</span>
+            </button>
+            <h2 class="text-3xl font-bold text-slate-900 text-center mb-6">Log In</h2>
+            <form id="login-form" class="space-y-4">
+                <div>
+                    <label for="login-email" class="block text-slate-700 font-semibold mb-2">Email</label>
+                    <input type="email" id="login-email" required class="w-full px-4 py-3 rounded-lg border-2 border-slate-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-colors">
+                </div>
+                <div>
+                    <label for="login-password" class="block text-slate-700 font-semibold mb-2">Password</label>
+                    <input type="password" id="login-password" required class="w-full px-4 py-3 rounded-lg border-2 border-slate-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-colors">
+                </div>
+                <button type="submit" class="w-full py-3 px-6 bg-indigo-600 text-white font-bold rounded-full shadow-lg hover:bg-indigo-700 transition duration-300">
+                    Log In
+                </button>
+            </form>
+            <div id="login-message" class="mt-4 text-center text-sm font-semibold text-slate-600 hidden"></div>
+        </div>
+    </div>
+
+    <footer class="bg-slate-900 text-slate-400 mt-20 md:mt-32">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 text-center text-sm">
+            <p>&copy; 2025 Remedial Innovation Project. An interactive summary based on the report by Aditya Sawant, Devansh Sojitra, and Rohan Maheta.</p>
+        </div>
+    </footer>
+    
+    <script>
+        const debug = {
+    log: (...args) => console.log('[Debug]:', ...args),
+    error: (...args) => console.error('[Error]:', ...args)
+};
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const data = {
+                challenges: [
+                    { title: "Standardized Curriculum", details: "A one-size-fits-all curriculum fails to address the individual learning needs of slow learners, creating gaps in understanding and retention of key concepts." },
+                    { title: "Lack of Differentiation", details: "Many classrooms lack differentiated instruction, which is essential for catering to the varying abilities and learning styles of students, especially those who struggle to keep pace." },
+                    { title: "Insufficient Resources", details: "Educational institutions often lack the necessary resources, such as specialized materials, support staff, and technology, to effectively assist slow learners." },
+                    { title: "Limited Assessment Methods", details: "Traditional tests focusing on rote memorization may not accurately reflect the abilities and progress of slow learners, leading to a misinterpretation of their capabilities." },
+                    { title: "Inadequate Support Systems", details: "There's often a lack of structured support like tutoring or mentoring, which can lead to feelings of isolation and frustration among slow learners." },
+                    { title: "Teacher Preparedness", details: "Many educators lack adequate training to recognize and address the needs of slow learners, leading to ineffective teaching practices and interventions." },
+                    { title: "Stigmatization", details: "Slow learners may face negative labeling within the classroom, which can severely impact their self-esteem and motivation to engage in the learning process." },
+                ],
+                solutions: [
+                    { 
+                        tab: "Personalized Learning Plans", 
+                        icon: "🎯",
+                        content: {
+                            title: "Customized Roadmaps to Success",
+                            description: "Each slow learner receives a customized learning plan that outlines specific academic goals, preferred learning strategies, and resources tailored to their individual needs. This ensures learning is always relevant and paced appropriately.",
+                            features: ["Individual Strength/Weakness Analysis", "Tailored Academic Goals", "Adaptive Learning Pathways"]
+                        }
+                    },
+                    { 
+                        tab: "Engaging Teaching Strategies",
+                        icon: "🎨",
+                        content: {
+                            title: "Making Learning Interactive and Fun",
+                            description: "We employ a variety of teaching methods to cater to different learning preferences. This includes hands-on activities, collaborative projects, gamification, and multimedia resources to enhance engagement and retention.",
+                            features: ["Differentiated Instruction", "Hands-on Activities", "Project-Based Learning", "Gamification Techniques"]
+                        }
+                    },
+                    { 
+                        tab: "Adaptive Technology",
+                        icon: "💻",
+                        content: {
+                            title: "Technology that Adapts to the Learner",
+                            description: "We integrate technology that adjusts to the learner's pace and style. This provides personalized exercises, instant feedback, and assessments to reinforce concepts and build confidence.",
+                            features: ["Adaptive Learning Software", "Online Tutorials & Quizzes", "Interactive Educational Apps"]
+                        }
+                    },
+                    { 
+                        tab: "Educator & Social Support",
+                        icon: "👥",
+                        content: {
+                            title: "Building a Supportive Ecosystem",
+                            description: "We provide ongoing professional development for educators and integrate programs to address the emotional and social needs of slow learners, fostering a positive and encouraging environment.",
+                            features: ["Professional Development for Teachers", "Peer Mentoring Programs", "Counseling & Social Skills Training"]
+                        }
+                    },
+                ],
+                workflow: [
+                    { step: "1. Identify & Assess Slow Learners", details: "The process begins with conducting diagnostic tests, observing classroom performance, and gathering feedback from teachers and parents to identify students needing support." },
+                    { step: "2. Develop Personalized Learning Plan (PLP)", details: "Once a learner is identified, a customized PLP is created. This involves setting specific learning objectives, designing tailored lesson plans, and choosing appropriate resources." },
+                    { step: "3. Implement Remedial Teaching Strategies", details: "The plan is put into action using various methods like one-on-one tutoring, interactive multimedia tools, peer-assisted learning, and activity-based learning." },
+                    { step: "4. Monitor Progress & Collect Feedback", details: "Continuous monitoring is key. We use formative assessments, student self-assessments, and teacher/parent feedback sessions to track progress." },
+                    { step: "5. Adjust & Reiterate Interventions", details: "If progress is not adequate, we adjust our approach. This may involve modifying teaching strategies, providing additional support, or introducing alternative learning methods." },
+                    { step: "6. Evaluate & Measure Success", details: "Finally, we conduct final assessments and compare progress against initial benchmarks to measure the overall success of the interventions, leading to a certification or new progression plan." }
+                ],
+                research: [
+                    { id: 1, title: "Learning Strategies for Slow Learners", year: 2023, focus: "Identified key stages for effective learning strategies used by Special Assistance Teachers.", category: "Teaching Methods" },
+                    { id: 2, title: "Challenges In Implementing Sustainable Education", year: 2024, focus: "Found that socio-political and economic factors heavily influence sustainable education efforts in developing nations.", category: "Policy" },
+                    { id: 3, title: "AI-Powered Adaptive Education", year: 2024, focus: "AI offers personalized learning but raises ethical concerns regarding data privacy and bias that must be addressed.", category: "AI in Education" },
+                    { id: 4, title: "Enhancing language learning through gestures", year: 2025, focus: "Showed that gesture-based corrective feedback enhances language learning outcomes in classroom settings.", category: "Teaching Methods" },
+                    { id: 5, title: "Effectiveness of Universal Design of Learning", year: 2024, focus: "UDL strategies support inclusive education and improve learning outcomes for students with mild intellectual disabilities.", category: "Policy" },
+                    { id: 6, title: "Modular-Based Approach in Remediation", year: 2021, focus: "Modular learning allows for individualized support, enhancing learning for at-risk students in social studies.", category: "Teaching Methods" },
+                    { id: 7, title: "Building Resilient Education Systems", year: 2021, focus: "Education systems must adapt to emergencies through flexible, rapid-response frameworks to ensure continuity of learning.", category: "Policy" },
+                    { id: 8, title: "Active Learning in Engineering Education", year: 2025, focus: "Active learning strategies in engineering foster better engagement and understanding, based on faculty experiences.", category: "Teaching Methods" }
+                ],
+                timeline: [
+                    { month: "December", task: "Discussion & Group Formation" },
+                    { month: "December", task: "Project Guide Selection" },
+                    { month: "January", task: "Project Discussion with Guide" },
+                    { month: "January", task: "Initial PPT Creation" },
+                    { month: "February", task: "Presentation to Guide & Revisions" },
+                    { month: "February", task: "Final PPT Created" },
+                    { month: "March", task: "Report Writing Begins" },
+                    { month: "March", task: "Report Submission" }
+                ],
+                educatorAssignments: {},
+                quizzes: {
+                    java: {
+                        questions: [
+                            {
+                                question: "What is the main principle of OOP in Java?",
+                                options: ["Encapsulation", "Documentation", "Integration", "Compilation"],
+                                correct: 0
+                            },
+                            {
+                                question: "Which keyword is used to inherit a class in Java?",
+                                options: ["extends", "implements", "inherits", "this"],
+                                correct: 0
+                            }
+                        ]
+                    },
+                    python: {
+                        questions: [
+                            {
+                                question: "What is the correct way to create a function in Python?",
+                                options: ["function myFunc():", "def myFunc():", "create myFunc():", "new myFunc():"],
+                                correct: 1
+                            },
+                            {
+                                question: "Which data type is immutable in Python?",
+                                options: ["List", "Dictionary", "Set", "Tuple"],
+                                correct: 3
+                            }
+                        ]
+                    },
+                    mongodb: {
+                        questions: [
+                            {
+                                question: "Which command shows all databases in MongoDB?",
+                                options: ["show dbs", "list dbs", "show databases", "get dbs"],
+                                correct: 0
+                            },
+                            {
+                                question: "What is the default port for MongoDB?",
+                                options: ["3306", "27017", "8080", "5432"],
+                                correct: 1
+                            }
+                        ]
+                    },
+                    sql: {
+                        questions: [
+                            {
+                                question: "What does SQL stand for?",
+                                options: ["Structured Query Language", "Simple Query Language", "System Query Language", "Standard Query Language"],
+                                correct: 0
+                            },
+                            {
+                                question: "Which SQL command is used to extract data?",
+                                options: ["EXTRACT", "GET", "SELECT", "PULL"],
+                                correct: 2
+                            }
+                        ]
+                    },
+                    c: {
+                        questions: [
+                            {
+                                question: "Which function is used to output text in C?",
+                                options: ["System.out.println()", "cout<<", "printf()", "print()"],
+                                correct: 2
+                            },
+                            {
+                                question: "What is the correct way to declare an integer pointer?",
+                                options: ["int ptr;", "pointer int;", "int *ptr;", "int ptr*;"],
+                                correct: 2
+                            }
+                        ]
+                    },
+                    csharp: {
+                        questions: [
+                            {
+                                question: "What is the correct way to declare a string in C#?",
+                                options: ["String str;", "string str;", "both are correct", "neither"],
+                                correct: 2
+                            },
+                            {
+                                question: "Which collection should be used for unique elements?",
+                                options: ["List", "Array", "HashSet", "Queue"],
+                                correct: 2
+                            }
+                        ]
+                    }
+                }
+            };
+
+            // This object will act as our "database"
+            let db = JSON.parse(localStorage.getItem('db')) || {
+                users: [],
+                studentData: {},
+                educatorAssignments: {} // Add this line
+            };
+            let currentUser = null;
+
+            const saveDb = () => {
+                localStorage.setItem('db', JSON.stringify(db));
+            };
+
+            const getStudentData = (email) => {
+                return initializeStudentData(email);
+            };
+
+            const initializeStudentData = (email) => {
+                if (!db.studentData[email]) {
+                    db.studentData[email] = {
+                        selfScore: 0,
+                        overallScore: 0,
+                        quizScores: {},
+                        personalizedPlan: "No personalized plan assigned yet.",
+                        studyMaterials: []
+                    };
+                    saveDb();
+                }
+                return db.studentData[email];
+            };
+
+            const mainContent = document.getElementById('main-content');
+            const initialView = document.getElementById('initial-view');
+            const authButtons = document.getElementById('auth-buttons');
+            const logoutButton = document.getElementById('logout-button');
+
+            const renderInitialView = () => {
+                initialView.style.display = 'block';
+                authButtons.style.display = 'flex';
+                logoutButton.style.display = 'none';
+                window.scrollTo(0, 0);
+                mainContent.querySelector('#dashboard-view')?.remove();
+
+                const challengesGrid = document.getElementById('challenges-grid');
+                challengesGrid.innerHTML = '';
+                data.challenges.forEach(challenge => {
+                    const card = document.createElement('div');
+                    card.className = "bg-white p-6 rounded-2xl shadow-md hover:shadow-xl hover:-translate-y-1 transition-all duration-300 cursor-pointer";
+                    card.innerHTML = `<h3 class="font-bold text-xl text-slate-900">${challenge.title}</h3><p class="mt-2 text-slate-600">${challenge.details}</p>`;
+                    challengesGrid.appendChild(card);
+                });
+                
+                const solutionTabs = document.getElementById('solution-tabs');
+                const solutionContent = document.getElementById('solution-content');
+                solutionTabs.innerHTML = '';
+                data.solutions.forEach((solution, index) => {
+                    const tab = document.createElement('button');
+                    tab.className = `tab-btn px-4 py-2 rounded-full border-2 border-transparent font-semibold transition ${index === 0 ? 'tab-active' : 'text-slate-600 hover:bg-slate-100'}`;
+                    tab.innerHTML = `<span class="mr-2">${solution.icon}</span>${solution.tab}`;
+                    tab.onclick = () => {
+                        document.querySelectorAll('.tab-btn').forEach(t => t.classList.remove('tab-active'));
+                        tab.classList.add('tab-active');
+                        renderSolutionContent(solution);
+                    };
+                    solutionTabs.appendChild(tab);
+                });
+                
+                function renderSolutionContent(solution) {
+                    solutionContent.innerHTML = `
+                        <h3 class="text-2xl font-bold text-slate-900">${solution.content.title}</h3>
+                        <p class="mt-2 text-slate-600">${solution.content.description}</p>
+                        <ul class="mt-6 space-y-2">
+                            ${solution.content.features.map(feature => `<li class="flex items-center"><span class="flex-shrink-0 w-5 h-5 bg-green-100 text-green-700 rounded-full flex items-center justify-center mr-3">✓</span><span class="text-slate-700">${feature}</span></li>`).join('')}
+                        </ul>
+                    `;
+                }
+                renderSolutionContent(data.solutions[0]);
+
+                const workflowDiagram = document.getElementById('workflow-diagram');
+                const workflowDetails = document.getElementById('workflow-details');
+                workflowDiagram.innerHTML = '';
+                data.workflow.forEach((item, index) => {
+                    const step = document.createElement('div');
+                    step.className = `workflow-step bg-white p-4 rounded-xl shadow-md border-2 border-transparent cursor-pointer transition duration-300`;
+                    step.innerHTML = `<p class="font-semibold text-slate-800">${item.step}</p>`;
+                    if (index < data.workflow.length - 1) {
+                        const arrow = document.createElement('div');
+                        arrow.className = 'flex justify-center my-2';
+                        arrow.innerHTML = `<span class="text-indigo-300 text-2xl">↓</span>`;
+                        workflowDiagram.appendChild(step);
+                        workflowDiagram.appendChild(arrow);
+                    } else {
+                         workflowDiagram.appendChild(step);
+                    }
+                    step.addEventListener('click', () => {
+                        document.querySelectorAll('.workflow-step').forEach(s => s.classList.remove('active'));
+                        step.classList.add('active');
+                        workflowDetails.innerHTML = `<h3 class="font-bold text-lg text-slate-900">${item.step}</h3><p class="mt-2 text-slate-600">${item.details}</p>`;
+                    });
+                });
+                
+                const researchGrid = document.getElementById('research-grid');
+                const researchFilters = document.getElementById('research-filters');
+                const categories = ['All', ...new Set(data.research.map(item => item.category))];
+                researchFilters.innerHTML = '';
+                
+                categories.forEach(category => {
+                    const btn = document.createElement('button');
+                    btn.className = `filter-btn px-4 py-2 rounded-full font-semibold text-sm transition ${category === 'All' ? 'active' : 'bg-white text-slate-700 hover:bg-slate-100'}`;
+                    btn.textContent = category;
+                    btn.onclick = () => filterResearch(category);
+                    researchFilters.appendChild(btn);
+                });
+
+                function renderResearch(items) {
+                    researchGrid.innerHTML = '';
+                    items.forEach(item => {
+                        const card = document.createElement('div');
+                        card.className = "bg-white p-6 rounded-2xl shadow-md flex flex-col";
+                        card.innerHTML = `
+                            <div class="flex-grow">
+                                 <p class="text-sm font-semibold text-indigo-600">${item.category}</p>
+                                <h3 class="mt-1 font-bold text-lg text-slate-900">${item.title}</h3>
+                                <p class="mt-2 text-sm text-slate-600">${item.focus}</p>
+                            </div>
+                            <p class="mt-4 text-xs font-medium text-slate-400">${item.year}</p>
+                        `;
+                        researchGrid.appendChild(card);
+                    });
+                }
+
+                function filterResearch(category) {
+                    document.querySelectorAll('.filter-btn').forEach(btn => {
+                        btn.classList.toggle('active', btn.textContent === category);
+                    });
+                    const filteredItems = category === 'All' ? data.research : data.research.filter(item => item.category === category);
+                    renderResearch(filteredItems);
+                }
+                renderResearch(data.research);
+                
+                const timelineContainer = document.getElementById('timeline-container');
+                timelineContainer.innerHTML = `
+                    <div class="relative">
+                        <div class="absolute left-1/2 -ml-0.5 w-1 h-full bg-slate-200"></div>
+                        ${data.timeline.map((item, index) => `
+                            <div class="relative mb-8">
+                                <div class="absolute left-1/2 -ml-2.5 w-5 h-5 bg-white border-4 border-indigo-600 rounded-full"></div>
+                                <div class="ml-[calc(50%+20px)] bg-white p-4 rounded-xl shadow-md w-[calc(50%-20px)]">
+                                    <p class="font-bold text-indigo-600 text-sm">${item.month}</p>
+                                    <p class="text-slate-700">${item.task}</p>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+            };
+
+            const renderStudentDashboard = (user, studentData) => {
+                const dashboardView = document.createElement('div');
+                dashboardView.id = 'dashboard-view';
+                dashboardView.className = 'max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-20';
+                
+                const plan = studentData.personalizedPlan || "No personalized plan assigned yet.";
+                const materials = studentData.studyMaterials || [];
+                
+                dashboardView.innerHTML = `
+                    <div class="space-y-12">
+                        <section class="text-center">
+                            <h2 class="text-4xl md:text-5xl font-extrabold text-slate-900">Welcome, ${user.name}!</h2>
+                            <p class="mt-4 text-lg text-slate-600">Your personalized educational journey awaits.</p>
+                        </section>
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                            <div class="bg-white p-8 rounded-2xl shadow-lg text-center">
+                                <h3 class="text-2xl font-bold text-indigo-600">Self-Score</h3>
+                                <p class="mt-4 text-5xl font-extrabold text-slate-900">${studentData.selfScore || 'N/A'}<span class="text-xl">%</span></p>
+                                <p class="mt-2 text-slate-500">Based on your recent assessments.</p>
+                            </div>
+                            <div class="bg-white p-8 rounded-2xl shadow-lg text-center">
+                                <h3 class="text-2xl font-bold text-indigo-600">Overall Score</h3>
+                                <p class="mt-4 text-5xl font-extrabold text-slate-900">${studentData.overallScore || 'N/A'}<span class="text-xl">%</span></p>
+                                <p class="mt-2 text-slate-500">Your cumulative academic performance.</p>
+                            </div>
+                            <div class="bg-white p-8 rounded-2xl shadow-lg text-center">
+                                <h3 class="text-2xl font-bold text-indigo-600">Assigned Educator</h3>
+                                <p class="mt-4 text-2xl font-bold text-slate-900">${user.assignedEducator || 'N/A'}</p>
+                                <p class="mt-2 text-slate-500">Your dedicated mentor.</p>
+                            </div>
+                        </div>
+                        <section class="mt-12">
+                            <h3 class="text-3xl font-bold text-slate-900">My Personalized Plan</h3>
+                            <div class="mt-6 bg-white p-8 rounded-2xl shadow-lg">
+                                <p class="text-slate-700">${plan}</p>
+                            </div>
+                        </section>
+                        <section class="mt-12">
+                            <h3 class="text-3xl font-bold text-slate-900">Study Materials</h3>
+                            <div class="mt-6 space-y-4">
+                                ${studentData.studyMaterials.map(material => `
+                                    <div class="bg-white p-6 rounded-2xl shadow-md">
+                                        <div class="flex justify-between items-center">
+                                            <div>
+                                                <h4 class="font-semibold text-lg">${material.title}</h4>
+                                                <p class="text-sm text-slate-500">
+                                                    Uploaded by: ${material.uploadedBy}
+                                                    <span class="mx-2">•</span>
+                                                    ${new Date(material.uploadedAt).toLocaleDateString()}
+                                                </p>
+                                            </div>
+                                            <a href="${material.url}" target="_blank" 
+                                               class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700">
+                                                View Material
+                                            </a>
+                                        </div>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </section>
+                        <section class="mt-12">
+                            <h3 class="text-3xl font-bold text-slate-900">Available Quizzes</h3>
+                            <div class="mt-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                ${Object.keys(data.quizzes).map(subject => `
+                                    <div class="bg-white p-6 rounded-2xl shadow-lg">
+                                        <h4 class="text-xl font-bold text-slate-900">${subject.toUpperCase()} Quiz</h4>
+                                        <p class="mt-2 text-slate-600">Test your knowledge in ${subject}</p>
+                                        <button 
+                                            onclick="startQuiz('${subject}')" 
+                                            class="mt-4 w-full py-2 px-4 bg-indigo-600 text-white font-semibold rounded-lg hover:bg-indigo-700 transition"
+                                        >
+                                            Start Quiz
+                                        </button>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </section>
+                        <div class="mt-8 bg-white p-6 rounded-2xl shadow-lg">
+                            <h3 class="text-2xl font-bold text-indigo-600 mb-4">Quiz Scores</h3>
+                            <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+                                ${Object.entries(studentData.quizScores || {}).map(([subject, score]) => `
+                                    <div class="text-center p-4 bg-slate-50 rounded-xl">
+                                        <h4 class="font-semibold text-slate-800">${subject.toUpperCase()}</h4>
+                                        <p class="text-2xl font-bold text-indigo-600 mt-2">${score}%</p>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    </div>
+                `;
+                mainContent.appendChild(dashboardView);
+            };
+
+            // Fix the getAssignedStudents function
+const getAssignedStudents = (educatorEmail) => {
+    debug.log('Getting assigned students for:', educatorEmail);
+    
+    // Initialize if doesn't exist
+    if (!db.educatorAssignments[educatorEmail]) {
+        db.educatorAssignments[educatorEmail] = [];
+        saveDb();
+    }
+    
+    // Get assignments
+    const assignments = db.educatorAssignments[educatorEmail];
+    debug.log('Found assignments:', assignments);
+    
+    // Map to full student objects
+    return assignments.map(studentEmail => {
+        const student = db.users.find(u => u.email === studentEmail);
+        if (student) {
+            return {
+                ...student,
+                ...getStudentData(studentEmail)
+            };
+        }
+        return null;
+    }).filter(Boolean); // Remove null entries
+};
+
+            // Replace the existing renderEducatorDashboard function with this updated version
+const renderEducatorDashboard = (user, allStudents) => {
+    console.log('Rendering educator dashboard...');
+    
+    // Clear existing content
+    initialView.style.display = 'none';
+    const existingDashboard = document.getElementById('dashboard-view');
+    if (existingDashboard) {
+        existingDashboard.remove();
+    }
+
+    // Create dashboard container
+    const dashboardView = document.createElement('div');
+    dashboardView.id = 'dashboard-view';
+    dashboardView.className = 'max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12';
+
+    // Get assigned students
+    const assignedStudents = getAssignedStudents(user.email);
+    console.log('Assigned students:', assignedStudents);
+
+    // Render dashboard HTML
+    dashboardView.innerHTML = `
+        <div class="space-y-8">
+            <section class="text-center">
+                <h2 class="text-4xl font-bold text-slate-900">Welcome, ${user.name}</h2>
+                <p class="mt-2 text-lg text-slate-600">Manage your students and their progress</p>
+            </section>
+
+            <!-- Stats Overview -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="bg-white p-6 rounded-xl shadow-lg">
+                    <h3 class="text-lg font-semibold text-slate-900">Total Students</h3>
+                    <p class="text-3xl font-bold text-indigo-600 mt-2">${assignedStudents.length}</p>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-lg">
+                    <h3 class="text-lg font-semibold text-slate-900">Average Performance</h3>
+                    <p class="text-3xl font-bold text-indigo-600 mt-2">
+                        ${Math.round(assignedStudents.reduce((acc, student) => 
+                            acc + (student.overallScore || 0), 0) / (assignedStudents.length || 1))}%
+                    </p>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-lg">
+                    <h3 class="text-lg font-semibold text-slate-900">Active Plans</h3>
+                    <p class="text-3xl font-bold text-indigo-600 mt-2">
+                        ${assignedStudents.filter(s => s.personalizedPlan).length}
+                    </p>
+                </div>
+            </div>
+
+            <!-- Student List -->
+            <div class="bg-white rounded-xl shadow-lg p-6">
+                <h3 class="text-2xl font-bold text-slate-900 mb-6">Your Students</h3>
+                <div class="space-y-4" id="student-list">
+                    ${assignedStudents.length > 0 ? 
+                        assignedStudents.map(student => `
+                            <div class="bg-slate-50 p-4 rounded-lg flex justify-between items-center">
+                                <div>
+                                    <h4 class="font-semibold">${student.name}</h4>
+                                    <p class="text-sm text-slate-600">${student.email}</p>
+                                </div>
+                                <button 
+                                    onclick="viewStudentProgress('${student.email}')"
+                                    class="px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700 transition"
+                                >
+                                    View Progress
+                                </button>
+                            </div>
+                        `).join('')
+                        : '<p class="text-slate-500">No students assigned yet</p>'
+                    }
+                </div>
+            </div>
+
+            <!-- Assign New Student -->
+            <div class="bg-white rounded-xl shadow-lg p-6">
+                <h3 class="text-2xl font-bold text-slate-900 mb-6">Assign New Student</h3>
+                <form id="assign-student-form" class="space-y-4">
+                    <select id="student-select" required 
+                            class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-indigo-500">
+                        <option value="">Select a student to assign...</option>
+                        ${allStudents
+                            .filter(s => !assignedStudents.find(as => as.email === s.email))
+                            .map(s => `
+                                <option value="${s.email}">${s.name} (${s.email})</option>
+                            `).join('')
+                        }
+                    </select>
+                    <button type="submit"
+                            class="w-full py-2 px-4 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition">
+                        Assign Student
+                    </button>
+                </form>
+            </div>
+
+            <!-- Upload Study Material -->
+            <div class="bg-white rounded-xl shadow-lg p-6">
+                <h3 class="text-2xl font-bold text-slate-900 mb-6">Upload Study Material</h3>
+                <form id="material-upload-form" class="space-y-4">
+                    <input type="text" id="material-title" placeholder="Material Title"
+                           class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-indigo-500">
+                    <input type="text" id="material-link" placeholder="Google Drive Link"
+                           class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-indigo-500">
+                    <button type="submit"
+                            class="w-full py-2 px-4 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition">
+                        Add Material
+                    </button>
+                </form>
+            </div>
+        </div>
+    `;
+
+    // Add event listeners
+    document.getElementById('assign-student-form')?.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const studentEmail = document.getElementById('student-select').value;
+        if (studentEmail) {
+            assignStudentToEducator(user.email, studentEmail);
+            initDashboard(user); // Refresh dashboard
+        }
+    });
+
+    document.getElementById('material-upload-form')?.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const title = document.getElementById('material-title').value;
+        const link = document.getElementById('material-link').value;
+        
+        if (title && link) {
+            assignedStudents.forEach(student => {
+                const studentData = getStudentData(student.email);
+                if (!studentData.studyMaterials) {
+                    studentData.studyMaterials = [];
+                }
+                studentData.studyMaterials.push({
+                    title,
+                    url: link,
+                    uploadedBy: user.email,
+                    uploadedAt: new Date().toISOString()
+                });
+            });
+            saveDb();
+            alert('Material added successfully!');
+            initDashboard(user); // Refresh dashboard
+        }
+    });
+};
+
+            const registerBtn = document.getElementById('register-btn');
+            const loginBtn = document.getElementById('login-btn');
+            const logoutBtn = document.getElementById('logout-btn');
+            const regModal = document.getElementById('registration-modal');
+            const loginModal = document.getElementById('login-modal');
+            const closeRegModalBtn = document.getElementById('close-reg-modal');
+            const closeLoginModalBtn = document.getElementById('close-login-modal');
+            const regForm = document.getElementById('registration-form');
+            const loginForm = document.getElementById('login-form');
+            const regMessage = document.getElementById('registration-message');
+            const loginMessage = document.getElementById('login-message');
+
+            const toggleAuthButtons = (isLoggedIn) => {
+                if (isLoggedIn) {
+                    authButtons.style.display = 'none';
+                    logoutButton.style.display = 'block';
+                } else {
+                    authButtons.style.display = 'flex';
+                    logoutButton.style.display = 'none';
+                }
+            };
+            
+            registerBtn.addEventListener('click', () => {
+                regModal.classList.add('open');
+            });
+
+            loginBtn.addEventListener('click', () => {
+                loginModal.classList.add('open');
+            });
+
+            logoutBtn.addEventListener('click', () => {
+                localStorage.removeItem('loggedInUser');
+                currentUser = null;
+                renderInitialView();
+                toggleAuthButtons(false);
+            });
+            
+            closeRegModalBtn.addEventListener('click', () => {
+                regModal.classList.remove('open');
+                regMessage.classList.add('hidden');
+                regForm.reset();
+            });
+
+            closeLoginModalBtn.addEventListener('click', () => {
+                loginModal.classList.remove('open');
+                loginMessage.classList.add('hidden');
+                loginForm.reset();
+            });
+
+            regModal.addEventListener('click', (e) => {
+                if (e.target.id === 'registration-modal') {
+                    regModal.classList.remove('open');
+                    regMessage.classList.add('hidden');
+                    regForm.reset();
+                }
+            });
+
+             loginModal.addEventListener('click', (e) => {
+                if (e.target.id === 'login-modal') {
+                    loginModal.classList.remove('open');
+                    loginMessage.classList.add('hidden');
+                    loginForm.reset();
+                }
+            });
+
+            regForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const name = document.getElementById('reg-name').value;
+                const email = document.getElementById('reg-email').value;
+                const password = document.getElementById('reg-password').value;
+                const role = document.querySelector('input[name="user-type"]:checked').value;
+
+                if (db.users.some(user => user.email === email)) {
+                    regMessage.textContent = 'Error: A user with this email already exists.';
+                    regMessage.classList.remove('hidden');
+                    return;
+                }
+
+                db.users.push({ name, email, password, role });
+                saveDb();
+                regMessage.textContent = `Thank you, ${name}! Your registration as a ${role} has been submitted.`;
+                regMessage.classList.remove('hidden', 'text-red-500');
+                regMessage.classList.add('text-green-500');
+                regForm.reset();
+                setTimeout(() => {
+                    regModal.classList.remove('open');
+                    regMessage.classList.add('hidden');
+                    loginModal.classList.add('open'); 
+                }, 3000);
+            });
+            
+            // Update the login form event listener
+            loginForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const email = document.getElementById('login-email').value;
+                const password = document.getElementById('login-password').value;
+
+                // Find user in the database
+                const user = db.users.find(u => u.email === email && u.password === password);
+
+                if (user) {
+                    localStorage.setItem('loggedInUser', JSON.stringify(user));
+                    currentUser = user;
+                    loginMessage.textContent = `Welcome back, ${user.name}!`;
+                    loginMessage.classList.remove('hidden', 'text-red-500');
+                    loginMessage.classList.add('text-green-500');
+
+                    setTimeout(() => {
+                        loginModal.classList.remove('open');
+                        initialView.style.display = 'none';
+                        toggleAuthButtons(true);
+
+                        // Clear existing dashboard
+                        const existingDashboard = document.getElementById('dashboard-view');
+                        if (existingDashboard) {
+                            existingDashboard.remove();
+                        }
+
+                        // Initialize student data if it doesn't exist
+                        if (user.role === 'student') {
+                            if (!db.studentData[user.email]) {
+                                db.studentData[user.email] = {
+                                    selfScore: 0,
+                                    overallScore: 0,
+                                    quizScores: {},
+                                    personalizedPlan: "No personalized plan assigned yet.",
+                                    studyMaterials: []
+                                };
+                                saveDb();
+                            }
+                            const studentData = getStudentData(user.email);
+                            console.log('Student data:', studentData); // Debug log
+                            renderStudentDashboard(user, studentData);
+                        } else {
+                            // For educators, redirect to educator dashboard
+                            const students = db.users.filter(u => u.role === 'student');
+                            renderEducatorDashboard(user, students);
+                        }
+                    }, 1500);
+                } else {
+                    loginMessage.textContent = 'Invalid email or password.';
+                    loginMessage.classList.remove('hidden', 'text-green-500');
+                    loginMessage.classList.add('text-red-500');
+                }
+            });
+            
+            const init = () => {
+                renderInitialView();
+                const storedUser = localStorage.getItem('loggedInUser');
+                if (storedUser) {
+                    currentUser = JSON.parse(storedUser);
+                    initialView.style.display = 'none';
+                    toggleAuthButtons(true);
+                    if (currentUser.role === 'student') {
+                        renderStudentDashboard(currentUser, getStudentData(currentUser.email));
+                    } else {
+                        const students = db.users.filter(u => u.role === 'student');
+                        renderEducatorDashboard(currentUser, students);
+                    }
+                }
+            };
+
+            init();
+
+            window.startQuiz = (subject) => {
+                const quiz = data.quizzes[subject];
+                
+                // Remove any existing quiz modals first
+                const existingModal = document.querySelector('#quiz-modal');
+                if (existingModal) {
+                    existingModal.remove();
+                }
+
+                const quizModal = document.createElement('div');
+                quizModal.id = 'quiz-modal';  // Add an ID for easy reference
+                quizModal.className = 'fixed inset-0 z-[100] bg-slate-900 bg-opacity-70 flex items-center justify-center p-4';
+                
+                quizModal.innerHTML = `
+                    <div class="bg-white p-8 rounded-3xl shadow-2xl w-full max-w-2xl mx-auto relative">
+                        <h3 class="text-2xl font-bold text-slate-900 mb-6">${subject.toUpperCase()} Quiz</h3>
+                        <form id="quiz-form" class="space-y-6">
+                            ${quiz.questions.map((q, i) => `
+                                <div class="p-4 bg-slate-50 rounded-xl">
+                                    <p class="font-semibold text-slate-800 mb-4">${i + 1}. ${q.question}</p>
+                                    <div class="space-y-2">
+                                        ${q.options.map((opt, j) => `
+                                            <div class="flex items-center">
+                                                <input type="radio" id="q${i}-opt${j}" name="q${i}" value="${j}"
+                                                       class="w-4 h-4 text-indigo-600 border-gray-300 focus:ring-indigo-500">
+                                                <label for="q${i}-opt${j}" class="ml-2 text-slate-700">${opt}</label>
+                                            </div>
+                                        `).join('')}
+                                    </div>
+                                </div>
+                            `).join('')}
+                            <button type="submit" 
+                                    class="w-full py-3 px-6 bg-indigo-600 text-white font-bold rounded-full shadow-lg hover:bg-indigo-700 transition">
+                                Submit Quiz
+                            </button>
+                        </form>
+                    </div>
+                `;
+                document.body.appendChild(quizModal);
+
+                document.getElementById('quiz-form').onsubmit = async (e) => {
+                    e.preventDefault();
+                    let score = 0;
+                    quiz.questions.forEach((q, i) => {
+                        const answer = document.querySelector(`input[name="q${i}"]:checked`);
+                        if (answer && parseInt(answer.value) === q.correct) {
+                            score++;
+                        }
+                    });
+                    
+                    const finalScore = Math.round((score / quiz.questions.length) * 100);
+                    
+                    // Update student data
+                    const studentData = getStudentData(currentUser.email);
+                    if (!studentData.quizScores) studentData.quizScores = {};
+                    studentData.quizScores[subject] = finalScore;
+                    studentData.overallScore = Object.values(studentData.quizScores)
+                        .reduce((a, b) => a + b, 0) / Object.values(studentData.quizScores).length;
+                    saveDb();
+
+                    // Replace existing modal content instead of creating new
+                    document.querySelector('#quiz-modal').innerHTML = `
+                        <div class="bg-white p-8 rounded-3xl shadow-2xl w-full max-w-md mx-auto relative text-center">
+                            <h3 class="text-2xl font-bold text-slate-900 mb-4">Quiz Results</h3>
+                            <p class="text-5xl font-bold text-indigo-600 mb-4">${finalScore}%</p>
+                            <p class="text-slate-600 mb-6">You got ${score} out of ${quiz.questions.length} questions correct!</p>
+                            <button onclick="closeQuiz()" 
+                                    class="py-3 px-6 bg-indigo-600 text-white font-bold rounded-full shadow-lg hover:bg-indigo-700 transition">
+                                Close
+                            </button>
+                        </div>
+                    `;
+                };
+            };
+
+            window.closeQuiz = () => {
+                const modal = document.querySelector('#quiz-modal');
+                if (modal) {
+                    modal.remove();
+                }
+                // Refresh dashboard to show updated scores
+                renderStudentDashboard(currentUser, getStudentData(currentUser.email));
+            };
+            
+            const assignStudentToEducator = (educatorEmail, studentEmail) => {
+                if (!db.educatorAssignments[educatorEmail]) {
+                    db.educatorAssignments[educatorEmail] = [];
+                }
+                if (!db.educatorAssignments[educatorEmail].includes(studentEmail)) {
+                    db.educatorAssignments[educatorEmail].push(studentEmail);
+                    const studentData = getStudentData(studentEmail);
+                    studentData.assignedEducator = educatorEmail;
+                    saveDb();
+                }
+            };
+
+            const getEducatorStudents = (educatorEmail) => {
+                const assignments = db.educatorAssignments[educatorEmail] || [];
+                debug.log('Getting assigned students for:', educatorEmail);
+    debug.log('Found assignments:', assignments);
+                return assignments.map(studentEmail => {
+                    const student = db.users.find(u => u.email === studentEmail);
+                    if (student) {
+                        const studentData = getStudentData(studentEmail);
+                        return {
+                            ...student,
+                            ...studentData
+                        };
+                    }
+                    return null;
+                }).filter(Boolean); // Remove any null values
+            };
+
+            const initGoogleDriveAPI = () => {
+                gapi.load('client:auth2', () => {
+                    gapi.client.init({
+                        apiKey: 'YOUR_API_KEY',
+                        clientId: 'YOUR_CLIENT_ID',
+                        discoveryDocs: ['https://www.googleapis.com/discovery/v1/apis/drive/v3/rest'],
+                        scope: 'https://www.googleapis.com/auth/drive.file'
+                    });
+                });
+            };
+
+            const uploadToGoogleDrive = async (file, studentEmail) => {
+                try {
+                    await gapi.auth2.getAuthInstance().signIn();
+                    
+                    const metadata = {
+                        name: file.name,
+                        mimeType: file.type,
+                        parents: ['YOUR_FOLDER_ID'] // Specify your Google Drive folder ID
+                    };
+
+                    const form = new FormData();
+                    form.append('metadata', new Blob([JSON.stringify(metadata)], { type: 'application/json' }));
+                    form.append('file', file);
+
+                    const upload = await gapi.client.drive.files.create({
+                        resource: metadata,
+                        media: {
+                            mimeType: file.type,
+                            body: form
+                        }
+                    });
+
+                    const fileId = upload.result.id;
+                    const fileUrl = `https://drive.google.com/file/d/${fileId}/view`;
+                    
+                    // Add to student's materials
+                    const studentData = getStudentData(studentEmail);
+                    studentData.studyMaterials.push({
+                        title: file.name,
+                        url: fileUrl,
+                        uploadedBy: currentUser.email,
+                        uploadedAt: new Date().toISOString()
+                    });
+                    saveDb();
+                    
+                    return fileUrl;
+                } catch (error) {
+                    console.error('Error uploading to Google Drive:', error);
+                    throw error;
+                }
+            };
+
+            // Add event listener for file upload
+            document.getElementById('upload-material-btn')?.addEventListener('click', async () => {
+                const fileInput = document.getElementById('material-file');
+                const studentSelect = document.getElementById('student-select');
+                
+                if (fileInput.files.length > 0 && studentSelect.value) {
+                    try {
+                        const file = fileInput.files[0];
+                        const fileUrl = await uploadToGoogleDrive(file, studentSelect.value);
+                        alert('File uploaded successfully!');
+                        // Refresh the dashboard
+                        renderEducatorDashboard(currentUser, db.users.filter(u => u.role === 'student'));
+                    } catch (error) {
+                        alert('Error uploading file. Please try again.');
+                    }
+                }
+            });
+
+// Add this function to show student progress
+window.viewStudentProgress = (studentEmail) => {
+    const student = db.users.find(u => u.email === studentEmail);
+    const studentData = getStudentData(studentEmail);
+    
+    const modal = document.createElement('div');
+    modal.className = 'fixed inset-0 z-[100] bg-slate-900/75 flex items-center justify-center p-4';
+    modal.innerHTML = `
+        <div class="bg-white rounded-xl p-6 max-w-2xl w-full">
+            <h3 class="text-2xl font-bold mb-4">${student.name}'s Progress</h3>
+            <div class="space-y-4">
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="bg-slate-50 p-4 rounded-lg">
+                        <p class="text-sm text-slate-600">Overall Score</p>
+                        <p class="text-2xl font-bold text-indigo-600">${studentData.overallScore || 0}%</p>
+                    </div>
+                    ${Object.entries(studentData.quizScores || {}).map(([subject, score]) => `
+                        <div class="bg-slate-50 p-4 rounded-lg">
+                            <p class="text-sm text-slate-600">${subject.toUpperCase()}</p>
+                            <p class="text-2xl font-bold text-indigo-600">${score}%</p>
+                        </div>
+                    `).join('')}
+                </div>
+            </div>
+            <button onclick="this.closest('.fixed').remove()" 
+                    class="mt-6 px-4 py-2 bg-slate-200 rounded hover:bg-slate-300 transition">
+                Close
+            </button>
+        </div>
+    `;
+    document.body.appendChild(modal);
+};
+
+        });
+    </script>
+</body>
+</html>
